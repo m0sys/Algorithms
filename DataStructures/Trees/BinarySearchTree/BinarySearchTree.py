@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union
+from typing import Union, Any
 
 
 class BinarySearchTree:
@@ -12,7 +12,7 @@ class BinarySearchTree:
 
         else:
             self._root = root
-            self._parent = None
+            self._parent = BinarySearchTree(None)
             self._left = BinarySearchTree(None)
             self._right = BinarySearchTree(None)
 
@@ -36,20 +36,33 @@ class BinarySearchTree:
         :return None:
         """
         if not self.isEmpty():
-            self._left.inorderTreeWalk()
+            if not self._left.isEmpty():
+                self._left.inorderTreeWalk()
             print(self._root)
-            self._right.inorderTreeWalk()
+            if not self._right.isEmpty():
+                self._right.inorderTreeWalk()
 
-    def search(self, item) -> BinarySearchTree:
+    def search(self, item: Any) -> Union[BinarySearchTree, None]:
         """
         Search the tree for the first occurrence of a node containing the root
         with value <item> and return it. If no such element exists return None.
         This takes O(h) steps where h is the height of the BST.
         :param item:
         :return:
+
+        doctest:
+        >>> bst = BinarySearchTree(100)
+        >>> node =  bst.search(100)
+        >>> node._root
+        100
+        >>> bst.search(1000) is None
+        True
         """
         # Base Case:
-        if self._root is None or self._root == item:
+        if self._root is None:
+            return None
+
+        if self._root == item:
             return self
 
         # Recursive Case:
@@ -58,11 +71,19 @@ class BinarySearchTree:
         else:
             return self._right.search(item)
 
-    def searchItr(self, item) -> BinarySearchTree:
+    def searchItr(self, item) -> Union[BinarySearchTree, None]:
         """
         Implementation of search but in a iterative fashion.
         :param item:
         :return:
+
+        doctest:
+        >>> bst = BinarySearchTree(100)
+        >>> node =  bst.searchItr(100)
+        >>> node._root
+        100
+        >>> bst.searchItr(1000) is None
+        True
         """
         x = self
         while not x.isEmpty() and x._root != item:
@@ -121,7 +142,15 @@ class BinarySearchTree:
         if self.isEmpty():
             return None
         else:
-            successor = self._root
+            x = self
+            if not self._right.isEmpty():
+                return self._right.findSuccessor()
+            y = self._parent
+            while y is not None and x == y._right:
+                x = y
+                y = y._parent
+
+            return y
 
     def insert(self, node: BinarySearchTree) -> None:
         """
@@ -143,9 +172,23 @@ class BinarySearchTree:
         node._parent = y
         if y is None: # Empty tree
             self._root = node._root
+            self._left = node._left
+            self._right = node._right
 
         elif node._root < y._root:
             y._left = node
 
         else:
             y._right = node
+
+    def getRoot(self):
+        return self._root
+
+    def getLeft(self):
+        return self._left
+
+    def getRight(self):
+        return self._right
+
+    def getParent(self):
+        return self._parent
