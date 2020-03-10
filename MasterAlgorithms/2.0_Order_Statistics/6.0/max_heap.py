@@ -49,12 +49,15 @@ class MaxHeap:
         if r <= self.heap_size and self.A[largest] < self.A[r]:
             largest = r
         if largest != i:
+            # Here by calling max heapify you are perculating down the tree until the max heap invariant becomes true. (2020/2/26)
             self._swap(i, largest)
             self._max_heapify(largest)
 
     def _build_max_heap(self) -> None:
         """Build max heap from array A
         """
+        # Note that the first half of the node abide the max heap property, therefore check max heap
+        # prop for the remaining half nodes at the top. (2020/2/26)
         ## self.heap_size = len(self.A)
         for i in range(math.floor(self.heap_size / 2), -1, -1):
             ## print("Building max heap: i = " + str(i))

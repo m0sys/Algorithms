@@ -119,6 +119,16 @@ class Test(unittest.TestCase):
         bst._check_rep_inv()
 
 
+    def test_rotate_right(self):
+        # TODO Write down tests.
+        pass
+
+
+    def test_rotate_left(self):
+        # TODO: Write down tests.
+        pass
+
+
     def test_search(self):
         bst = self._build_balanced_bst()
 
@@ -294,18 +304,120 @@ class Test(unittest.TestCase):
         expected = None
         self.assertEqual(actual, expected)
 
+    def test_predecessor(self) -> None:
+        pass
+
+
 
     def test_delete_node(self) -> None:
         bst = self._build_balanced_bst()
 
+        # Test #0: Remove root.
+        bst.delete_node()
+        bst._check_rep_inv()
+        actual = bst.key
+        expected = 54
+        ## self.assertEqual(actual, expected)
+
         # Test #1: Remove node with no children.
+        bst = self._build_balanced_bst()
         x = bst.search(76)
-        bst.delete_node(x)
+        x.delete_node()
+        bst._check_rep_inv()
         actual = bst.right.right
         expected = None
-        self.assertEqual(actu)
+        self.assertEqual(actual, expected)
 
-        # Test #2:
+        # Test #2: Remove node with just one child.
+        bst = self._build_balanced_bst()
+        x = bst.search(54) # right child
+        x.delete_node()
+        bst._check_rep_inv()
+        actual = bst.right.left.key
+        expected = 67
+        self.assertEqual(actual, expected)
+
+        bst = self._build_balanced_bst()
+        x = bst.search(23) # left child
+        x.delete_node()
+        bst._check_rep_inv()
+        actual = bst.left.right.key
+        expected = 19
+        self.assertEqual(actual, expected)
+
+        # Test #3: Remove node with two children.
+
+        # part I: right child of node is the successor.
+        bst = self._build_balanced_bst()
+        x = bst.search(72)
+        x.delete_node()
+        bst._check_rep_inv()
+        actual = bst.right.key
+        expected = 76
+        self.assertEqual(actual, expected)
+
+        # part II: the min node of right child is the successor.
+        bst = self._build_balanced_bst()
+        x = bst.search(17)
+        x.delete_node()
+        bst._check_rep_inv()
+        actual = bst.left.key
+        expected = 19
+        self.assertEqual(actual, expected)
+
+    def test_transpant(self) -> None:
+        bst = self._build_balanced_bst()
+
+        # Transpant root with new_node.
+        x = bst.search(17)
+        bst._transplant(x)
+        actual = bst.key
+        expected = 17
+        self.assertEqual(actual, expected)
+        actual = bst.left.key
+        expected = 12
+        actual = bst.right.key
+        expected = 23
+        self.assertEqual(actual, expected)
+
+        # Transpant non root element with left child.
+        bst = self._build_balanced_bst()
+        x = bst.search(17)
+        v = bst.search(12)
+        x._transplant(v)
+
+        node = bst.left
+        actual = node.key
+        expected = 12
+        self.assertEqual(actual, expected)
+        actual = node.left.key
+        expected = 9
+        actual = node.right.key
+        expected = 14
+        self.assertEqual(actual, expected)
+        actual = node.parent.key
+        expected = 50
+        self.assertEqual(actual, expected)
+
+        # TODO: Transpant non root element with right child.
+        bst = self._build_balanced_bst()
+        x = bst.search(17)
+        v = bst.search(23)
+        x._transplant(v)
+
+        node = bst.left
+        actual = node.key
+        expected = 23
+        self.assertEqual(actual, expected)
+        actual = node.left.key
+        expected = 19
+        actual = node.right
+        expected = None
+        self.assertEqual(actual, expected)
+        actual = node.parent.key
+        expected = 50
+        self.assertEqual(actual, expected)
+
 
 
     def  _build_random_bst(self) -> BST:

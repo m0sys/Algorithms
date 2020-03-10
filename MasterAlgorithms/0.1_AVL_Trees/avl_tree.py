@@ -2,6 +2,8 @@
 # Implementing an AVL Tree data structure based on
 # UOFT notes by Vassos Hadzilacos with some help from
 # the algorithm textbook.
+# Additionally refered to William Fiset's DS lecture for better understanding.
+# With some MIT help of cource.
 
 from typing import Union
 
@@ -9,13 +11,21 @@ class AvlTree:
     """A balanced AVL Tree implmentation.
 
     Representation Invariant:
-        The root of the tree is the only node where 'self.parent' is None.
+        - The root of the tree is the only node where 'self.parent' is None.
+        - self.left.key <= self.key <= self.right.key
+        - bf is in the set {-1, 0, 1}, where bf = H(node.right) - H(node.left)
     """
     def __init__(self, key: int) -> None:
         self.key = key
         self.parent = None
         self.right = None
         self.left = None
+        # DS augmentation.
+        self.bf = 0
+        self.height = 0
+
+    def insert(self, key: int) -> None:
+        ## root = _insert(root)
 
     def insert(self, key: int) -> None:
         if self.key >= key and self.left != None:

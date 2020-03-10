@@ -73,8 +73,82 @@ class BST:
                 self.right = new_node
 
 
-    def delete_node(self, node: BST) -> None:
-        pass
+    def delete_node(self) -> None:
+        ## print("Self key: " + str(self.key))
+        if self.left is None:
+            # Replace self with right child.
+            self._transplant(self.right)
+
+        elif self.right is None:
+            self._transplant(self.left)
+        else:
+            # Both children available. find successor.
+            successor = self.successor()
+            self.key, successor.key = successor.key, self.key
+            successor.delete_node()
+            ## if successor != self.right:
+            ##     # replace successor with its right subtree.
+            ##     successor._transplant(successor.right)
+            ##     successor.right = self.right
+            ##     successor.right.parent = successor
+            ## # replace self with successor.
+            ## print("self.left: " + str(self.left.key))
+            ## self._transplant(successor)
+            ## print("self.left after transplant: " + str(self.left.key))
+            ## successor.left = self.left
+            ## successor.left.parent = successor
+
+
+    def right_rotate(self) -> BST:
+        """Rotate right.
+
+
+        Preconditions:
+            - self has a left subtree.
+
+        Return the success of the self.
+        i.e. the node that has replaced self. (left child of self)
+        """
+        p = self.parent
+        b = self.left # the successor of self
+        self.left = b.right
+        if b.right is not None:
+            b.right.parent = self
+        b.right = self # point successor right node to self
+        # Update parent down line.
+        if p is not None:
+            if p.left == self:
+                p.left = b
+            else:
+                p.right = b
+        return b
+
+
+    def left_rotate(self) -> BST:
+        """Rotate left.
+
+        Preconditions:
+            - self has a right subtree.
+
+        Return the successor of self.
+        i.e the node that replaced self. (right child of self)
+
+        """
+        p = self.parent
+        b = self.right
+        self.right = b.left
+        if b.left is not None:
+            b.left.parent = self
+        b.left = self
+        # Update parent down line.
+        if parent is not None:
+            if p.left == self:
+                p.left = b
+            else:
+                p.right = b
+
+        return b
+
 
     def search(self, key: int) -> BST:
         """Find the sub bst with key 'key'.
@@ -120,29 +194,80 @@ class BST:
 
         The successor of a node x is the node with the smallest key greater than 'self.key'.
         """
-        if self.right != None:
+        if self.right is not None:
             return self.right.minimum()
 
         x = self
         y = x.parent
-        while y != None and x == y.right:
+        while y is not None and x == y.right:
             x = y
             y = y.parent
         return y
-        ## if self.right == None:
-        ##     parent = self.parent
-        ##     if parent != None:
-        ##         if parent.left == self:
-        ##             return parent
-        ##         elif parent.right == self:
-        ##             grand_parent = parent.parent
-        ##             if grand_parent != None:
-        ##                 if grand_parent.left == parent:
-        ##                     return grand_parent
-        ##                 return None
-        ##     return None
 
 
+    def predecessor(self) -> BST:
+        """Return the predecessor of this BST.
+
+        The predecessor of a node x is the node that is largest key smaller than 'self.key'.
+        """
+        if self.left is not None:
+            return self.left.maximum()
+
+        x = self
+        y = x.parent
+        while y is not None and x == y.left:
+            x = y
+            y = y.parent
+        return y
+
+
+    def inorder_tree_walk(self):
+        if self.left != None:
+            self.left.inorder_tree_walk()
+        print(self.key)
+        if self.right != None:
+            self.right.inorder_tree_walk()
+
+
+    def _transplant(self, v: BST) -> None:
+        """Replace self with subtree v.
+
+        Preconditions:
+            - v must be subtree.
+        """
+        if self.parent is None:
+            # Self is the root of the tree.
+            if v is not None:
+                self.key = v.key
+                self.right = v.right
+                self.left = v.left
+                ## v.left = None
+                ## v.right = None
+            else:
+                self.key = None
+                self.right = None
+                self.left = None
+
+        elif self == self.parent.left:
+            self.parent.left = v
+        else:
+            self.parent.right = v
+
+        if v is not None:
+            v.parent = self.parent
+
+    def _validate_bst(self):
+        stack = [(root, float('-inf'), float('inf')), ]
+        while stack:
+            root, lower, upper = stack.pop()
+            if not root:
+                continue
+            val = root.val
+            if val <= lower or val >= upper:
+                return False
+            stack.append((root.right, val, upper))
+            stack.append((root.left, lower, val))
+        return True
 
     def _check_rep_inv(self) -> None:
         """
@@ -156,12 +281,6 @@ class BST:
             self.right._check_rep_inv()
 
 
-    def inorder_tree_walk(self):
-        if self.left != None:
-            self.left.inorder_tree_walk()
-        print(self.key)
-        if self.right != None:
-            self.right.inorder_tree_walk()
 
     ## def preorder_tree_walk(self):
     ##     if self.key != None:
